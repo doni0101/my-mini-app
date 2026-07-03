@@ -15,11 +15,9 @@
         .page { display: none; }
         .page.active { display: block; }
         
-        /* Стили для бокса с полем ввода */
         .question-box { background: white; padding: 16px; border-radius: 14px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.01); }
         .question-text { font-size: 16px; font-weight: 700; margin-bottom: 12px; }
         
-        /* 🔥 Самое главное: Поле ввода, которое вызывает клавиатуру телефона */
         .answer-input { 
             width: 100%; 
             padding: 14px; 
@@ -132,34 +130,48 @@
             currentQuestions.forEach((q, idx) => {
                 const box = document.createElement('div');
                 box.className = 'question-box';
-                
-                // Создаем разметку: Текст вопроса + текстовое поле для ввода ответа ручками
                 box.innerHTML = `
                     <div class="question-text">${idx + 1}. ${q.text}</div>
                     <input type="text" 
                            inputmode="decimal" 
                            class="answer-input" 
                            placeholder="Javobingizni kiriting..." 
-                           id="input-q-${idx}"
-                           oninput="saveUserAnswer(${idx}, this.value)">
+                           id="input-q-${idx}">
                 `;
                 qList.appendChild(box);
             });
             navigateTo('quiz-page');
         }
 
-        function saveUserAnswer(idx, value) {
-            currentQuestions[idx].userAnswer = value.trim();
-        }
-
+        // 🔥 УМНАЯ ФУНКЦИЯ ПРОВЕРКИ ОТВЕТОВ
         function submitQuiz() {
             let correct = 0;
             let unanswered = false;
 
             currentQuestions.forEach((q, idx) => {
-                const val = document.getElementById(`input-q-${idx}`).value.trim();
-                if (!val) unanswered = true;
-                if (String(val) === String(q.correct)) correct++;
+                const inputElement = document.getElementById(`input-q-${idx}`);
+                const userVal = inputElement.value.trim();
+                
+                if (!userVal) {
+                    unanswered = true;
+                    return;
+                }
+
+                // Очищаем оба значения от лишних точек, нулей после точки и пробелов
+                let cleanUser = parseFloat(userVal);
+                let cleanCorrect = parseFloat(q.correct);
+
+                // Если это были не числа (например текст), сравниваем просто как очищенные строки
+                if (isNaN(cleanUser) || isNaN(cleanCorrect)) {
+                    if (String(userVal).toLowerCase() === String(q.correct).trim().toLowerCase()) {
+                        correct = correct + 1;
+                    }
+                } else {
+                    // Если это числа, сравниваем их математически! (3110 === 3110.0)
+                    if (cleanUser === cleanCorrect) {
+                        correct = correct + 1;
+                    }
+                }
             });
 
             if (unanswered) {
@@ -170,6 +182,11 @@
             alert(`Test yakunlandi!\nTo'g'ri javoblar: ${correct} / ${currentQuestions.length}`);
             solvedCount++;
             document.getElementById('stat-solved').textContent = solvedCount + " ta";
+            
+            // Считаем процент правильных ответов для красивой статистики внизу
+            let percent = Math.round((correct / currentQuestions.length) * 100);
+            document.getElementById('stat-percent').textContent = percent + "%";
+            
             navigateTo('main-page');
         }
     </script>
