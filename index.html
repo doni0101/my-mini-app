@@ -1,4 +1,4 @@
-                        <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
@@ -6,141 +6,15 @@
     <title>Ilm Devoni</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        body {
-            background-color: #f8f9fa;
-            color: #333;
-            padding: 16px;
-            padding-bottom: 120px;
-        }
-
-        .section-title {
-            font-size: 13px;
-            font-weight: 700;
-            color: #6c757d;
-            letter-spacing: 0.5px;
-            margin-bottom: 12px;
-            margin-top: 20px;
-            text-transform: uppercase;
-        }
-
-        /* Админ-панель (скрыта по умолчанию) */
-        #admin-panel {
-            display: none;
-            background: #fff3cd;
-            border: 1px solid #ffeeba;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 15px;
-        }
-
-        .admin-title {
-            font-size: 14px;
-            font-weight: bold;
-            color: #856404;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .admin-input {
-            width: 100%;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            margin-bottom: 10px;
-            font-size: 14px;
-        }
-
-        /* Предметы */
-        .subject-card {
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        }
-
-        .subject-name {
-            font-size: 18px;
-            font-weight: 700;
-            color: #111;
-        }
-
-        .subject-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            background-color: #e8fafd; 
-            color: #00b4d8;
-        }
-
-        /* Тесты */
-        .test-card {
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        }
-
-        .test-title {
-            font-size: 15px;
-            font-weight: 600;
-        }
-
-        .btn-start {
-            background-color: #0f172a;
-            color: #ffffff;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        /* Панель статистики */
-        .stats-panel {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: #ffffff;
-            padding: 12px 16px;
-            border-top: 1px solid #eee;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-        }
-
-        .stat-box {
-            border-radius: 12px;
-            padding: 8px;
-            text-align: center;
-            color: white;
-        }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; }
+        body { background-color: #f8f9fa; color: #333; padding: 16px; padding-bottom: 120px; }
+        .section-title { font-size: 13px; font-weight: 700; color: #6c757d; letter-spacing: 0.5px; margin: 20px 0 12px; text-transform: uppercase; }
+        .card { background: #ffffff; border-radius: 16px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: center; }
+        .subject-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; background-color: #e8fafd; color: #00b4d8; }
+        .btn { background-color: #0f172a; color: #ffffff; border: none; padding: 10px 16px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .stats-panel { position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; padding: 12px 16px; border-top: 1px solid #eee; }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .stat-box { border-radius: 12px; padding: 8px; text-align: center; color: white; }
         .stat-box.green { background-color: #00c853; }
         .stat-box.purple { background-color: #3f51b5; }
         .stat-box.orange { background-color: #ff9800; }
@@ -148,40 +22,22 @@
 </head>
 <body>
 
-    <!-- БЛОК АДМИНА -->
-    <div id="admin-panel">
-        <div class="admin-title">⚙️ Admin Paneli (Faqat sizga ko'rinadi)</div>
-        <input type="text" id="new-test-title" class="admin-input" placeholder="Yangi test nomi (Masalan: Majburiy Matematika - 26026)">
-        <button class="btn-start" style="background-color: #28a745; width: 100%;" onclick="addNewTest()">➕ Test qo'shish</button>
-    </div>
-
-    <!-- Предметы -->
     <div class="section-title">Majburiy fanlar</div>
-    <div class="subject-card">
+    <div class="card">
         <div>
             <span style="font-size: 10px; font-weight: bold; color: #00c853;">01 • FAN</span>
-            <div class="subject-name" id="main-subject-name">Matematika</div>
-            <span style="font-size: 13px; color: #888;">0 ta test topshirildi</span>
+            <div style="font-size: 18px; font-weight: 700;">Matematika</div>
+            <span style="font-size: 13px; color: #888;" id="completed-counter">0 ta test topshirildi</span>
         </div>
         <div class="subject-icon">📐</div>
     </div>
 
-    <!-- Активные тесты -->
     <div class="section-title">Bugungi faol testlar</div>
-    <div id="tests-container">
-        <div class="test-card">
-            <div>
-                <span class="test-title">Majburiy Matematika – 26025</span>
-                <div style="font-size: 12px; color: #888; margin-top: 4px;">⏱ Tugash vaqti: 23:30</div>
-            </div>
-            <button class="btn-start">▶ Boshlash</button>
-        </div>
-    </div>
+    <div id="tests-container"></div>
 
-    <!-- Статистика -->
     <div class="stats-panel">
         <div class="stats-grid">
-            <div class="stat-box green"><h3>0 ta</h3><p style="font-size: 10px;">Yechilgan</p></div>
+            <div class="stat-box green"><h3 id="stat-solved">0 ta</h3><p style="font-size: 10px;">Yechilgan</p></div>
             <div class="stat-box purple"><h3>0%</h3><p style="font-size: 10px;">O'rtacha</p></div>
             <div class="stat-box orange"><h3>0 m</h3><p style="font-size: 10px;">Sarflandi</p></div>
         </div>
@@ -191,42 +47,41 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // 🛑 ВПИШИ СВОЙ ID СЮДА ВМЕСТО 123456789
-        const ADMIN_ID = 1075145667; 
+        // Читаем список тестов, который нам передал Python-бот в ссылке
+        const urlParams = new URLSearchParams(window.location.search);
+        const testsParam = urlParams.get('tests');
+        const container = document.getElementById('tests-container');
 
-        // Автоматическое определение админа
-        const user = tg.initDataUnsafe?.user;
-        if (user && user.id === ADMIN_ID) {
-            document.getElementById('admin-panel').style.display = 'block';
+        if (testsParam) {
+            // Декодируем и разделяем тесты обратно в массив
+            const testsArray = decodeURIComponent(testsParam).split('|');
+            
+            // Выводим каждый тест на экран
+            testsArray.forEach(testTitle => {
+                if (testTitle.trim() !== "") {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <div>
+                            <span style="font-size: 15px; font-weight: 600;">${testTitle}</span>
+                            <div style="font-size: 12px; color: #888; margin-top: 4px;">⏱ Tugash vaqti: 23:30</div>
+                        </div>
+                        <button class="btn" onclick="startTest('${testTitle}')">▶ Boshlash</button>
+                    `;
+                    container.appendChild(card);
+                }
+            });
+        } else {
+            container.innerHTML = "<p style='color:#888; padding:10px;'>Hozircha faol testlar yo'q.</p>";
         }
 
-        // Функция добавления нового теста прямо из приложения
-        function addNewTest() {
-            const input = document.getElementById('new-test-title');
-            const title = input.value.trim();
-            
-            if (!title) {
-                alert("Test nomini kiriting!");
-                return;
-            }
-
-            const container = document.getElementById('tests-container');
-            
-            // Создаем новую карточку теста
-            const newCard = document.createElement('div');
-            newCard.className = 'test-card';
-            newCard.innerHTML = `
-                <div>
-                    <span class="test-title">${title}</span>
-                    <div style="font-size: 12px; color: #888; margin-top: 4px;">⏱ Tugash vaqti: 23:30</div>
-                </div>
-                <button class="btn-start">▶ Boshlash</button>
-            `;
-            
-            container.prepend(newCard); // Добавляем в начало списка
-            input.value = ""; // Очищаем поле ввода
-            
-            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+        let solvedCount = 0;
+        function startTest(title) {
+            alert(title + " boshlandi!");
+            solvedCount++;
+            document.getElementById('stat-solved').textContent = solvedCount + " ta";
+            document.getElementById('completed-counter').textContent = solvedCount + " ta test topshirildi";
+            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
         }
     </script>
 </body>
