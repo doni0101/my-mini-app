@@ -34,6 +34,31 @@
             box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
         }
         
+        /* НОВЫЕ СТИЛИ ДЛЯ КНОПОК ВАРИАНТОВ ОТВЕТОВ */
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .option-btn {
+            background: #f1f5f9;
+            border: 2px solid #e2e8f0;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 15px;
+            text-align: left;
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: 500;
+            color: #334155;
+        }
+        .option-btn.selected {
+            background: #e0f2fe;
+            border-color: #38bdf8;
+            color: #0369a1;
+        }
+
         .stats-panel { position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; padding: 12px 16px; border-top: 1px solid #eee; }
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
         .stat-box { border-radius: 12px; padding: 8px; text-align: center; color: white; }
@@ -120,6 +145,7 @@
             mathContainer.innerHTML = "<p style='color:#888; font-size:14px;'>Bu fandan faol testlar mavjud emas.</p>";
         }
 
+        // УМНЫЙ СТАРТ ТЕСТА: Проверяет, есть ли варианты ответов
         function startQuiz(testName) {
             document.getElementById('quiz-title').textContent = testName;
             const qList = document.getElementById('questions-list');
@@ -130,52 +156,73 @@
             currentQuestions.forEach((q, idx) => {
                 const box = document.createElement('div');
                 box.className = 'question-box';
-                box.innerHTML = `
-                    <div class="question-text">${idx + 1}. ${q.text}</div>
-                    <input type="text" 
-                           inputmode="decimal" 
-                           class="answer-input" 
-                           placeholder="Javobingizni kiriting..." 
-                           id="input-q-${idx}">
-                `;
+                
+                let htmlContent = `<div class="question-text">${idx + 1}. ${q.text}</div>`;
+                
+                // Если админ передал варианты ответов, делаем красивые кнопки
+                if (q.options && q.options.length > 0 && q.options[0] !== "") {
+                    htmlContent += `<div class="options-container" id="container-q-${idx}">`;
+                    q.options.forEach(opt => {
+                        htmlContent += `
+                            <button class="option-btn" onclick="selectOption(${idx}, '${opt.replace(/'/g, "\\'")}', this)">
+                                ${opt}
+                            </button>`;
+                    });
+                    htmlContent += `</div><input type="hidden" id="input-q-${idx}" value="">`;
+                } else {
+                    // Если вариантов нет (открытый вопрос) — оставляем обычное текстовое поле
+                    htmlContent += `
+                        <input type="text" 
+                               inputmode="decimal" 
+                               class="answer-input" 
+                               placeholder="Javobingizni kiriting..." 
+                               id="input-q-${idx}">`;
+                }
+                
+                box.innerHTML = htmlContent;
                 qList.appendChild(box);
             });
             navigateTo('quiz-page');
         }
 
-        // 🔥 УМНАЯ ФУНКЦИЯ ПРОВЕРКИ ОТВЕТОВ
+        // Функция выбора варианта (подсвечивает кнопку синим и сохраняет ответ)
+        function selectOption(qIdx, val, btnElement) {
+            const container = document.getElementById(`container-q-${qIdx}`);
+            container.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+            btnElement.classList.add('selected');
+            
+            document.getElementById(`input-q-${qIdx}`).value = val;
+        }
+
         function submitQuiz() {
             let correct = 0;
             let unanswered = false;
 
             currentQuestions.forEach((q, idx) => {
                 const inputElement = document.getElementById(`input-q-${idx}`);
-                const userVal = inputElement.value.trim();
+                const userVal = inputElement ? inputElement.value.trim() : "";
                 
                 if (!userVal) {
                     unanswered = true;
                     return;
                 }
 
-                // Очищаем оба значения от лишних точек, нулей после точки и пробелов
                 let cleanUser = parseFloat(userVal);
                 let cleanCorrect = parseFloat(q.correct);
 
-                // Если это были не числа (например текст), сравниваем просто как очищенные строки
                 if (isNaN(cleanUser) || isNaN(cleanCorrect)) {
                     if (String(userVal).toLowerCase() === String(q.correct).trim().toLowerCase()) {
-                        correct = correct + 1;
+                        correct++;
                     }
                 } else {
-                    // Если это числа, сравниваем их математически! (3110 === 3110.0)
                     if (cleanUser === cleanCorrect) {
-                        correct = correct + 1;
+                        correct++;
                     }
                 }
             });
 
             if (unanswered) {
-                alert("Iltimos, barcha savollarga javob yozing!");
+                alert("Iltimos, barcha savollarga javob bering!");
                 return;
             }
             
@@ -183,9 +230,10 @@
             solvedCount++;
             document.getElementById('stat-solved').textContent = solvedCount + " ta";
             
-            // Считаем процент правильных ответов для красивой статистики внизу
             let percent = Math.round((correct / currentQuestions.length) * 100);
             document.getElementById('stat-percent').textContent = percent + "%";
+            
+            document.querySelector('.completed-counter').textContent = `${solvedCount} ta test topshirildi`;
             
             navigateTo('main-page');
         }
