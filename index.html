@@ -14,10 +14,28 @@
         .btn-back { background-color: #e2e8f0; color: #334155; border: none; padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; margin-bottom: 15px; display: inline-flex; align-items: center; gap: 5px; }
         .page { display: none; }
         .page.active { display: block; }
+        
+        /* Стили для бокса с полем ввода */
         .question-box { background: white; padding: 16px; border-radius: 14px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.01); }
         .question-text { font-size: 16px; font-weight: 700; margin-bottom: 12px; }
-        .option-btn { width: 100%; text-align: left; padding: 12px; margin-bottom: 8px; border: 1px solid #e2e8f0; border-radius: 10px; background: white; font-size: 14px; cursor: pointer; }
-        .option-btn.selected { background: #e0f2fe; border-color: #38bdf8; font-weight: 600; }
+        
+        /* 🔥 Самое главное: Поле ввода, которое вызывает клавиатуру телефона */
+        .answer-input { 
+            width: 100%; 
+            padding: 14px; 
+            border: 2px solid #e2e8f0; 
+            border-radius: 10px; 
+            font-size: 16px; 
+            outline: none; 
+            transition: 0.2s;
+            background-color: #f8fafc;
+        }
+        .answer-input:focus { 
+            border-color: #38bdf8; 
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+        }
+        
         .stats-panel { position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; padding: 12px 16px; border-top: 1px solid #eee; }
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
         .stat-box { border-radius: 12px; padding: 8px; text-align: center; color: white; }
@@ -28,7 +46,6 @@
 </head>
 <body>
 
-    <!-- ЭКРАН 1: ГЛАВНАЯ -->
     <div id="main-page" class="page active">
         <div class="section-title">Majburiy fanlar</div>
         <div class="card" onclick="navigateTo('math-page')" style="cursor: pointer;">
@@ -43,22 +60,21 @@
         <div id="global-tests-container"></div>
     </div>
 
-    <!-- ЭКРАН 2: МАТЕМАТИКА -->
     <div id="math-page" class="page">
         <button class="btn-back" onclick="navigateTo('main-page')">← Orqaga</button>
         <div class="section-title">Faol matematika testlari</div>
         <div id="math-tests-container"></div>
     </div>
 
-    <!-- ЭКРАН 3: ТЕСТ -->
     <div id="quiz-page" class="page">
         <button class="btn-back" onclick="navigateTo('math-page')">✕ Chiqish</button>
         <h2 id="quiz-title" style="font-size: 20px; font-weight: 800; margin-bottom: 15px;">Тест</h2>
+        
         <div id="questions-list"></div>
-        <button class="btn" style="background-color: #00c853; width: 100%; padding: 14px; font-size: 16px;" onclick="submitQuiz()">Javoblarni yuborish</button>
+        
+        <button class="btn" style="background-color: #00c853; width: 100%; padding: 14px; font-size: 16px; margin-top: 15px;" onclick="submitQuiz()">Javoblarni yuborish</button>
     </div>
 
-    <!-- СТАТИСТИКА -->
     <div class="stats-panel">
         <div class="stats-grid">
             <div class="stat-box green"><h3 id="stat-solved">0 ta</h3><p style="font-size: 10px;">Yechilgan</p></div>
@@ -80,7 +96,6 @@
             document.getElementById(pageId).classList.add('active');
         }
 
-        // Читаем упакованные данные из URL
         const urlParams = new URLSearchParams(window.location.search);
         const dataParam = urlParams.get('data');
         
@@ -89,9 +104,7 @@
 
         if (dataParam) {
             try {
-                // Декодируем JSON из ссылки
                 dbData = JSON.parse(decodeURIComponent(dataParam));
-                
                 Object.keys(dbData).forEach(testName => {
                     const cardHtml = `
                         <div class="card">
@@ -102,7 +115,7 @@
                     mathContainer.innerHTML += cardHtml;
                 });
             } catch(e) {
-                globalContainer.innerHTML = "<p style='color:red;'>Ma'lumotlarni yuklashda xatolik.</p>";
+                globalContainer.innerHTML = "<p style='color:red;'>Ma'lumotni o'qishda xatolik.</p>";
             }
         } else {
             globalContainer.innerHTML = "<p style='color:#888; font-size:14px;'>Hozircha faol testlar yo'q.</p>";
@@ -114,41 +127,43 @@
             const qList = document.getElementById('questions-list');
             qList.innerHTML = "";
 
-            // Берем реальные вопросы этого теста, присланные ботом
             currentQuestions = dbData[testName] || [];
 
             currentQuestions.forEach((q, idx) => {
                 const box = document.createElement('div');
                 box.className = 'question-box';
-                box.innerHTML = `<div class="question-text">${idx + 1}. ${q.text}</div>`;
                 
-                q.options.forEach(opt => {
-                    const b = document.createElement('button');
-                    b.className = 'option-btn';
-                    b.textContent = opt;
-                    b.onclick = () => {
-                        box.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
-                        b.classList.add('selected');
-                        q.userAnswer = opt;
-                    };
-                    box.appendChild(b);
-                });
+                // Создаем разметку: Текст вопроса + текстовое поле для ввода ответа ручками
+                box.innerHTML = `
+                    <div class="question-text">${idx + 1}. ${q.text}</div>
+                    <input type="text" 
+                           inputmode="decimal" 
+                           class="answer-input" 
+                           placeholder="Javobingizni kiriting..." 
+                           id="input-q-${idx}"
+                           oninput="saveUserAnswer(${idx}, this.value)">
+                `;
                 qList.appendChild(box);
             });
             navigateTo('quiz-page');
+        }
+
+        function saveUserAnswer(idx, value) {
+            currentQuestions[idx].userAnswer = value.trim();
         }
 
         function submitQuiz() {
             let correct = 0;
             let unanswered = false;
 
-            currentQuestions.forEach(q => {
-                if (!q.userAnswer) unanswered = true;
-                if (String(q.userAnswer) === String(q.correct)) correct++;
+            currentQuestions.forEach((q, idx) => {
+                const val = document.getElementById(`input-q-${idx}`).value.trim();
+                if (!val) unanswered = true;
+                if (String(val) === String(q.correct)) correct++;
             });
 
             if (unanswered) {
-                alert("Iltimos, barcha savollarga javob bering!");
+                alert("Iltimos, barcha savollarga javob yozing!");
                 return;
             }
             
