@@ -9,7 +9,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; }
         body { background-color: #f8f9fa; color: #333; padding: 16px; padding-bottom: 120px; }
         .section-title { font-size: 13px; font-weight: 700; color: #6c757d; letter-spacing: 0.5px; margin: 20px 0 12px; text-transform: uppercase; }
-        .card { background: #ffffff; border-radius: 16px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: center; }
+        .card { background: #ffffff; border-radius: 16px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: center; cursor: pointer;}
         .btn { background-color: #0f172a; color: #ffffff; border: none; padding: 10px 16px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
         .btn-back { background-color: #e2e8f0; color: #334155; border: none; padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; margin-bottom: 15px; display: inline-flex; align-items: center; gap: 5px; }
         .page { display: none; }
@@ -19,45 +19,15 @@
         .question-text { font-size: 16px; font-weight: 700; margin-bottom: 12px; }
         
         .answer-input { 
-            width: 100%; 
-            padding: 14px; 
-            border: 2px solid #e2e8f0; 
-            border-radius: 10px; 
-            font-size: 16px; 
-            outline: none; 
-            transition: 0.2s;
-            background-color: #f8fafc;
+            width: 100%; padding: 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 16px; outline: none; transition: 0.2s; background-color: #f8fafc;
         }
-        .answer-input:focus { 
-            border-color: #38bdf8; 
-            background-color: #ffffff;
-            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
-        }
+        .answer-input:focus { border-color: #38bdf8; background-color: #ffffff; box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15); }
         
-        /* НОВЫЕ СТИЛИ ДЛЯ КНОПОК ВАРИАНТОВ ОТВЕТОВ */
-        .options-container {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-top: 10px;
-        }
+        .options-container { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
         .option-btn {
-            background: #f1f5f9;
-            border: 2px solid #e2e8f0;
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 15px;
-            text-align: left;
-            cursor: pointer;
-            transition: 0.2s;
-            font-weight: 500;
-            color: #334155;
+            background: #f1f5f9; border: 2px solid #e2e8f0; padding: 12px; border-radius: 10px; font-size: 15px; text-align: left; cursor: pointer; transition: 0.2s; font-weight: 500; color: #334155;
         }
-        .option-btn.selected {
-            background: #e0f2fe;
-            border-color: #38bdf8;
-            color: #0369a1;
-        }
+        .option-btn.selected { background: #e0f2fe; border-color: #38bdf8; color: #0369a1; }
 
         .stats-panel { position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; padding: 12px 16px; border-top: 1px solid #eee; }
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
@@ -70,31 +40,14 @@
 <body>
 
     <div id="main-page" class="page active">
-        <div class="section-title">Majburiy fanlar</div>
-        <div class="card" onclick="navigateTo('math-page')" style="cursor: pointer;">
-            <div>
-                <span style="font-size: 10px; font-weight: bold; color: #00c853;">01 • FAN</span>
-                <div style="font-size: 18px; font-weight: 700;">Matematika</div>
-                <span style="font-size: 13px; color: #888;" class="completed-counter">0 ta test topshirildi</span>
-            </div>
-            <div class="subject-icon" style="font-size: 20px;">📐</div>
-        </div>
-        <div class="section-title">Bugungi faol testlar</div>
-        <div id="global-tests-container"></div>
+        <div class="section-title">Fanlar ro'yxati</div>
+        <div id="subjects-container"></div>
     </div>
 
-    <div id="math-page" class="page">
+    <div id="subject-detail-page" class="page">
         <button class="btn-back" onclick="navigateTo('main-page')">← Orqaga</button>
-        <div class="section-title">Faol matematika testlari</div>
-        <div id="math-tests-container"></div>
-    </div>
-
-    <div id="quiz-page" class="page">
-        <button class="btn-back" onclick="navigateTo('math-page')">✕ Chiqish</button>
-        <h2 id="quiz-title" style="font-size: 20px; font-weight: 800; margin-bottom: 15px;">Тест</h2>
-        
+        <h2 id="subject-title" style="margin-bottom: 15px;">Fan nomi</h2>
         <div id="questions-list"></div>
-        
         <button class="btn" style="background-color: #00c853; width: 100%; padding: 14px; font-size: 16px; margin-top: 15px;" onclick="submitQuiz()">Javoblarni yuborish</button>
     </div>
 
@@ -113,6 +66,7 @@
         let solvedCount = 0;
         let dbData = {}; 
         let currentQuestions = [];
+        let currentSubject = "";
 
         function navigateTo(pageId) {
             document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
@@ -121,37 +75,40 @@
 
         const urlParams = new URLSearchParams(window.location.search);
         const dataParam = urlParams.get('data');
-        
-        const globalContainer = document.getElementById('global-tests-container');
-        const mathContainer = document.getElementById('math-tests-container');
+        const subjectsContainer = document.getElementById('subjects-container');
 
         if (dataParam) {
             try {
                 dbData = JSON.parse(decodeURIComponent(dataParam));
-                Object.keys(dbData).forEach(testName => {
+                
+                // Рендерим карточки предметов динамически
+                Object.keys(dbData).forEach(subjectName => {
+                    const count = dbData[subjectName].length;
                     const cardHtml = `
-                        <div class="card">
-                            <div><span style="font-size: 15px; font-weight: 600;">${testName}</span></div>
-                            <button class="btn" onclick="startQuiz('${testName.replace(/'/g, "\\'")}')">▶ Boshlash</button>
+                        <div class="card" onclick="openSubject('${subjectName.replace(/'/g, "\\'")}')">
+                            <div>
+                                <span style="font-size: 10px; font-weight: bold; color: #3f51b5;">FAN</span>
+                                <div style="font-size: 18px; font-weight: 700;">${subjectName}</div>
+                                <span style="font-size: 13px; color: #888;">${count} ta savol mavjud</span>
+                            </div>
+                            <div style="font-size: 20px;">📚</div>
                         </div>`;
-                    globalContainer.innerHTML += cardHtml;
-                    mathContainer.innerHTML += cardHtml;
+                    subjectsContainer.innerHTML += cardHtml;
                 });
             } catch(e) {
-                globalContainer.innerHTML = "<p style='color:red;'>Ma'lumotni o'qishda xatolik.</p>";
+                subjectsContainer.innerHTML = "<p style='color:red;'>Ma'lumotni o'qishda xatolik.</p>";
             }
         } else {
-            globalContainer.innerHTML = "<p style='color:#888; font-size:14px;'>Hozircha faol testlar yo'q.</p>";
-            mathContainer.innerHTML = "<p style='color:#888; font-size:14px;'>Bu fandan faol testlar mavjud emas.</p>";
+            subjectsContainer.innerHTML = "<p style='color:#888; font-size:14px;'>Hozircha faol testlar yo'q.</p>";
         }
 
-        // УМНЫЙ СТАРТ ТЕСТА: Проверяет, есть ли варианты ответов
-        function startQuiz(testName) {
-            document.getElementById('quiz-title').textContent = testName;
+        function openSubject(subjectName) {
+            currentSubject = subjectName;
+            document.getElementById('subject-title').textContent = subjectName;
             const qList = document.getElementById('questions-list');
             qList.innerHTML = "";
 
-            currentQuestions = dbData[testName] || [];
+            currentQuestions = dbData[subjectName] || [];
 
             currentQuestions.forEach((q, idx) => {
                 const box = document.createElement('div');
@@ -159,7 +116,6 @@
                 
                 let htmlContent = `<div class="question-text">${idx + 1}. ${q.text}</div>`;
                 
-                // Если админ передал варианты ответов, делаем красивые кнопки
                 if (q.options && q.options.length > 0 && q.options[0] !== "") {
                     htmlContent += `<div class="options-container" id="container-q-${idx}">`;
                     q.options.forEach(opt => {
@@ -170,27 +126,20 @@
                     });
                     htmlContent += `</div><input type="hidden" id="input-q-${idx}" value="">`;
                 } else {
-                    // Если вариантов нет (открытый вопрос) — оставляем обычное текстовое поле
                     htmlContent += `
-                        <input type="text" 
-                               inputmode="decimal" 
-                               class="answer-input" 
-                               placeholder="Javobingizni kiriting..." 
-                               id="input-q-${idx}">`;
+                        <input type="text" class="answer-input" placeholder="Javobingizni kiriting..." id="input-q-${idx}">`;
                 }
                 
                 box.innerHTML = htmlContent;
                 qList.appendChild(box);
             });
-            navigateTo('quiz-page');
+            navigateTo('subject-detail-page');
         }
 
-        // Функция выбора варианта (подсвечивает кнопку синим и сохраняет ответ)
         function selectOption(qIdx, val, btnElement) {
             const container = document.getElementById(`container-q-${qIdx}`);
             container.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
             btnElement.classList.add('selected');
-            
             document.getElementById(`input-q-${qIdx}`).value = val;
         }
 
@@ -202,10 +151,7 @@
                 const inputElement = document.getElementById(`input-q-${idx}`);
                 const userVal = inputElement ? inputElement.value.trim() : "";
                 
-                if (!userVal) {
-                    unanswered = true;
-                    return;
-                }
+                if (!userVal) { unanswered = true; return; }
 
                 let cleanUser = parseFloat(userVal);
                 let cleanCorrect = parseFloat(q.correct);
@@ -232,8 +178,6 @@
             
             let percent = Math.round((correct / currentQuestions.length) * 100);
             document.getElementById('stat-percent').textContent = percent + "%";
-            
-            document.querySelector('.completed-counter').textContent = `${solvedCount} ta test topshirildi`;
             
             navigateTo('main-page');
         }
