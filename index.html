@@ -1,364 +1,130 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ilm Dovoni Mini App</title>
+    <title>Ilm Devoni - Mini App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: var(--tg-theme-bg-color, #f4f6fa);
-            --text-color: var(--tg-theme-text-color, #2c3e50);
-            --secondary-bg: var(--tg-theme-secondary-bg-color, #ffffff);
-            --hint-color: var(--tg-theme-hint-color, #7f8c8d);
-            --button-color: var(--tg-theme-button-color, #3498db);
-            --button-text: var(--tg-theme-button-text-color, #ffffff);
-            --green: #2ecc71;
-            --purple: #9b59b6;
-            --orange: #f39c12;
+            --bg-color: #f7f9fc;
+            --card-bg: #ffffff;
+            --text-main: #1a1c20;
+            --text-sub: #707579;
+            --primary: #248bcf;
         }
-
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg-color);
-            color: var(--text-color);
+            color: var(--text-main);
             margin: 0;
-            padding: 0;
-            padding-bottom: 75px; /* Отступ для нижнего меню */
-            user-select: none;
-        }
-
-        /* Шапка */
-        .header {
-            background-color: var(--secondary-bg);
             padding: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding-bottom: 80px;
         }
-        .header-title {
-            font-size: 18px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .header-title span {
-            color: var(--button-color);
-        }
-        .avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: #e1e8ed;
-        }
-
-        /* Контейнеры экранов */
-        .screen {
-            display: none;
-            padding: 16px;
-            animation: fadeIn 0.3s ease;
-        }
-        .screen.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(4px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Баннер призыва к действию */
-        .promo-banner {
-            background: linear-gradient(135deg, #e0f2fe, #f0fdf4);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(0,0,0,0.02);
-            font-size: 14px;
-            line-height: 1.4;
-        }
-
-        /* Секции предметов */
+        .header { text-align: center; margin-bottom: 20px; }
+        .header h1 { font-size: 20px; margin: 0; color: var(--primary); }
         .section-title {
             font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--hint-color);
-            margin: 20px 0 10px 0;
-            font-weight: bold;
-        }
-
-        .subject-card {
-            background-color: var(--secondary-bg);
-            border-radius: 14px;
-            padding: 16px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-            cursor: pointer;
-        }
-        .subject-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .subject-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-        }
-        .subject-name {
             font-weight: 700;
-            font-size: 16px;
-            margin-bottom: 2px;
+            text-transform: uppercase;
+            color: var(--text-sub);
+            margin: 24px 0 12px 0;
+            letter-spacing: 0.5px;
         }
-        .subject-status {
-            font-size: 12px;
-            color: var(--hint-color);
-        }
-
-        /* Тесты и кнопки действий */
-        .test-card {
-            background-color: var(--secondary-bg);
+        .task-card {
+            background: var(--card-bg);
             border-radius: 14px;
-            padding: 16px;
-            margin-bottom: 12px;
+            padding: 14px;
+            margin-bottom: 10px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.02);
         }
-        .test-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 12px;
+        .task-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .task-title { font-weight: 600; font-size: 16px; }
+        .task-points {
+            background: #e3f2fd; color: var(--primary);
+            padding: 4px 8px; border-radius: 8px; font-size: 12px; font-weight: 700;
         }
-        .badge {
-            font-size: 11px;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-weight: bold;
-        }
-        .badge-math { background: rgba(46, 204, 113, 0.1); color: var(--green); }
-        .badge-lang { background: rgba(155, 89, 182, 0.1); color: var(--purple); }
-        .badge-hist { background: rgba(243, 156, 18, 0.1); color: var(--orange); }
-        
-        .test-title { font-weight: bold; font-size: 15px; margin-top: 4px;}
-        .test-time { font-size: 12px; color: var(--hint-color); margin-top: 4px; }
-        
-        .btn-group {
-            display: flex;
-            gap: 8px;
-            margin-top: 12px;
-        }
-        .btn {
-            flex: 1;
-            padding: 10px;
-            border-radius: 8px;
-            border: none;
-            font-weight: bold;
-            font-size: 14px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-        .btn-primary {
-            background-color: #2c3e50;
-            color: white;
-        }
-        .btn-outline {
-            background-color: transparent;
-            border: 1px solid var(--button-color);
-            color: var(--button-color);
-        }
-
-        /* Лидерборд */
-        .leaderboard-hero {
-            background: linear-gradient(135deg, #4dabf7, #2196f3);
-            color: white;
-            border-radius: 16px;
-            padding: 24px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .leaderboard-hero h2 { margin: 0; font-size: 22px; }
-        .leaderboard-hero p { margin: 6px 0 0 0; opacity: 0.8; font-size: 13px;}
-
-        .tabs-container {
-            display: flex;
-            background: rgba(0,0,0,0.04);
-            padding: 4px;
-            border-radius: 10px;
-            margin-bottom: 16px;
-        }
-        .tab-btn {
-            flex: 1;
-            padding: 8px;
-            border: none;
-            background: transparent;
-            font-weight: bold;
-            color: var(--hint-color);
-            border-radius: 8px;
-            cursor: pointer;
-        }
-        .tab-btn.active {
-            background: var(--secondary-bg);
-            color: var(--text-color);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-        }
-
-        .leader-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: var(--secondary-bg);
-            padding: 12px 16px;
-            border-radius: 12px;
-            margin-bottom: 8px;
-        }
-        .leader-rank {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 13px;
-        }
-        .rank-1 { background: #ffd700; color: #7f6000; }
-        .rank-2 { background: #c0c0c0; color: #555; }
-        .rank-3 { background: #cd7f32; color: #5c3a21; }
-        
-        .leader-meta {
-            flex: 1;
-            margin-left: 12px;
-        }
-        .leader-name { font-weight: bold; font-size: 14px; }
-        .leader-stats { font-size: 12px; color: var(--hint-color); }
-        .leader-count { font-weight: bold; color: var(--button-color); font-size: 14px; }
-
-        /* Статистика */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-top: 12px;
-        }
-        .stat-box {
-            background: var(--secondary-bg);
-            padding: 12px;
-            border-radius: 12px;
-            text-align: center;
-        }
-        .stat-value { font-size: 18px; font-weight: bold; margin-bottom: 4px; }
-        .stat-label { font-size: 11px; color: var(--hint-color); text-transform: uppercase; }
-
-        /* Нижний Навбар */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 65px;
-            background-color: var(--secondary-bg);
-            display: flex;
-            border-top: 1px solid rgba(0,0,0,0.08);
-            box-shadow: 0 -4px 12px rgba(0,0,0,0.02);
-            z-index: 1000;
-        }
-        .nav-item {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: var(--hint-color);
-            font-size: 11px;
-            font-weight: bold;
-            cursor: pointer;
-            gap: 4px;
-        }
-        .nav-item.active {
-            color: var(--button-color);
-        }
-        .nav-icon {
-            font-size: 20px;
-        }
-
-        /* Экран деталей предмета */
-        .sub-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        .btn-back {
-            background: var(--secondary-bg);
-            border: 1px solid rgba(0,0,0,0.1);
-            padding: 8px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
+        .task-desc { font-size: 13px; color: var(--text-sub); margin-top: 6px; line-height: 1.4; }
+        .btn-solve {
+            width: 100%; background: var(--primary); color: white; border: none;
+            padding: 10px; border-radius: 10px; font-weight: 600; margin-top: 10px; cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-    <div id="screen-home" class="screen active">
-        <div class="header">
-            <div class="header-title"><span>📚</span> ILM DOVONI</div>
-            <div class="avatar" id="user-avatar"></div>
-        </div>
-        
-        <div class="promo-banner">
-            <strong>Ona tili va tarix majburiy uchun darslar qizg'in davom etmoqda...</strong><br>
-            <small style="color:var(--hint-color)">Siz har jamoa vaqt ichida yuqori ball to'plash imkoniyatiga egasiz 🚀</small>
-        </div>
+    <div class="header">
+        <h1 id="greeting">ILM DEVONI</h1>
+    </div>
 
-        <div class="section-title">MAJBURIY FANLAR</div>
-        
-        <div class="subject-card" onclick="openSubject('Matematika', 'math')">
-            <div class="subject-info">
-                <div class="subject-icon" style="background: var(--green)">01</div>
-                <div>
-                    <div class="subject-name">Matematika</div>
-                    <div class="subject-status">0 ta test muvaffaqiyatli topshirildi</div>
-                </div>
-            </div>
-            <div style="color: var(--hint-color)">➔</div>
-        </div>
+    <div class="section-title">Aktiv topshiriqlar (Из админки)</div>
+    <div id="dynamic-tasks">
+        <p style="text-align:center; color:gray; font-size:13px;">Задач пока нет. Перезайдите через бота.</p>
+    </div>
 
-        <div class="subject-card" onclick="openSubject('Ona tili', 'lang')">
-            <div class="subject-info">
-                <div class="subject-icon" style="background: var(--purple)">02</div>
-                <div>
-                    <div class="subject-name">Ona tili</div>
-                    <div class="subject-status">0 ta test muvaffaqiyatli topshirildi</div>
-                </div>
-            </div>
-            <div style="color: var(--hint-color)">➔</div>
-        </div>
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
 
-        <div class="subject-card" onclick="openSubject('Tarix', 'hist')">
-            <div class="subject-info">
-                <div class="subject-icon" style="background: var(--orange)">03</div>
-                <div>
-                    <div class="subject-name">Tarix</div>
-                    <div class="subject-status">0 ta test muvaffaqiyatli topshirildi</div>
-                </div>
-            </div>
-            <div style="color: var(--hint-color)">➔</div>
-        </div>
+        const user = tg.initDataUnsafe?.user;
+        if(user) { document.getElementById('greeting').innerText = `ILM DEVONI (${user.first_name})`; }
 
-        <div class="section-title">BUGUNGI FAOL TESTLAR</div>
-        <div id="active-tasks-container"></div>
+        // Читаем параметры из строки запуска Telegram
+        function getTasksFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            // Telegram передает параметры в tgWebAppStartParam
+            const startParam = urlParams.get('tgWebAppStartParam');
+            
+            if (startParam) {
+                try {
+                    // Декодируем Base64 строку обратно в JSON список задач
+                    const decodedData = atob(startParam.replace(/-/g, '+').replace(/_/g, '/'));
+                    const tasks = JSON.parse(decodeURIComponent(escape(decodedData)));
+                    renderTasks(tasks);
+                } catch (e) {
+                    document.getElementById('dynamic-tasks').innerHTML = '<p style="text-align:center; color:red;">Ошибка обработки данных задач</p>';
+                }
+            }
+        }
+
+        function renderTasks(tasks) {
+            const container = document.getElementById('dynamic-tasks');
+            container.innerHTML = '';
+            
+            if(tasks.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:gray; font-size:13px;">Список заданий пуст.</p>';
+                return;
+            }
+            
+            tasks.forEach(task => {
+                const el = document.createElement('div');
+                el.className = 'task-card';
+                el.innerHTML = `
+                    <div class="task-header">
+                        <div class="task-title">${task.title}</div>
+                        <div class="task-points">${task.points} PTS</div>
+                    </div>
+                    <div class="task-desc">${task.description}</div>
+                    <button class="btn-solve" onclick="startTask(${task.id}, '${task.title}')">Boshlash</button>
+                `;
+                container.appendChild(el);
+            });
+        }
+
+        function startTask(id, title) {
+            tg.showPopup({
+                title: 'Решение задачи',
+                message: `Вы открыли задание "${title}". Нажмите ОК, чтобы отправить подтверждение в чат бота.`,
+                buttons: [{id: 'ok', type: 'ok', text: 'OK'}]
+            }, function() {
+                tg.sendData(JSON.stringify({action: "solve", id: id}));
+                tg.close();
+            });
+        }
+
+        // Запуск парсинга при старте страницы
+        getTasksFromUrl();
+    </script>
+</body>
+</html>
