@@ -7,15 +7,15 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --tg-theme-bg-color: #ffffff;
+            --tg-theme-bg-color: #f4f4f7;
             --tg-theme-text-color: #000000;
             --tg-theme-button-color: #2481cc;
             --tg-theme-button-text-color: #ffffff;
-            --tg-theme-hint-color: #999999;
+            --tg-theme-hint-color: #8e8e93;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: var(--tg-theme-bg-color, #f4f4f7);
             color: var(--tg-theme-text-color, #000000);
             margin: 0;
@@ -48,9 +48,36 @@
             flex-grow: 1;
         }
 
+        .start-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin: auto 0;
+        }
+
+        .start-icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+        }
+
+        .start-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--tg-theme-text-color);
+        }
+
+        .start-info {
+            font-size: 14px;
+            color: var(--tg-theme-hint-color);
+            margin-bottom: 25px;
+        }
+
         .progress {
             font-size: 14px;
-            color: var(--tg-theme-hint-color, #8e8e93);
+            color: var(--tg-theme-hint-color);
             margin-bottom: 10px;
             font-weight: 500;
         }
@@ -84,17 +111,17 @@
             display: flex;
             align-items: center;
             transition: all 0.2s ease;
-            color: var(--tg-theme-text-color, #000000);
+            color: var(--tg-theme-text-color);
             font-weight: 500;
+            width: 100%;
         }
 
         .option-btn:active {
             transform: scale(0.98);
-            background-color: #f2f2f7;
         }
 
         .option-btn.selected {
-            border-color: var(--tg-theme-button-color, #2481cc);
+            border-color: var(--tg-theme-button-color);
             background-color: rgba(36, 129, 204, 0.08);
         }
 
@@ -110,7 +137,7 @@
         }
 
         .option-btn.selected .option-badge {
-            background: var(--tg-theme-button-color, #2481cc);
+            background: var(--tg-theme-button-color);
             color: #fff;
         }
 
@@ -121,31 +148,19 @@
 
         .next-btn {
             width: 100%;
-            background-color: var(--tg-theme-button-color, #2481cc);
-            color: var(--tg-theme-button-text-color, #ffffff);
+            background-color: var(--tg-theme-button-color);
+            color: var(--tg-theme-button-text-color);
             border: none;
             border-radius: 10px;
             padding: 15px;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            transition: opacity 0.2s;
         }
 
         .next-btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
-        }
-
-        .result-screen {
-            text-align: center;
-            padding: 40px 20px;
-        }
-
-        .result-title {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 10px;
         }
 
         .hidden {
@@ -157,163 +172,24 @@
 
     <div class="header">ILM DEVONI (Doniyor)</div>
 
-    <div class="quiz-container" id="quiz-box">
-        <div class="progress" id="progress-text">Savol: 1 / 1</div>
-        
-        <div class="question-card" id="question-text">
-            Yuklanmoqda...
+    <div class="quiz-container" id="start-box">
+        <div class="start-card">
+            <div class="start-icon">📝</div>
+            <div class="start-title" id="test-main-title">Matematika Testi</div>
+            <div class="start-info" id="test-main-info">Savollar soni: yuklanmoqda...</div>
+            <button class="next-btn" onclick="startQuiz()">Testni boshlash ➔</button>
         </div>
+    </div>
 
-        <div class="options-container" id="options-box">
-            </div>
-
+    <div class="quiz-container hidden" id="quiz-box">
+        <div class="progress" id="progress-text">Savol: 1 / 1</div>
+        <div class="question-card" id="question-text">Yuklanmoqda...</div>
+        <div class="options-container" id="options-box"></div>
         <div class="navigation">
             <button class="next-btn" id="next-button" disabled onclick="nextQuestion()">Keyingi savol ➔</button>
         </div>
     </div>
 
     <div class="quiz-container hidden" id="result-box">
-        <div class="result-screen">
-            <div class="result-title">🎉 Test yakunlandi!</div>
-            <p id="result-text">Siz barcha savollarga javob berdingiz.</p>
-            <button class="next-btn" onclick="closeApp()">Ilovani yopish</button>
-        </div>
-    </div>
-
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand();
-
-        let questions = [];
-        let currentIdx = 0;
-        let selectedAnswers = {};
-
-        // Функция декодирования переданных ботом задач из URL
-        function initQuiz() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const startParam = urlParams.get('tgWebAppStartParam');
-
-            if (startParam) {
-                try {
-                    // Декодируем base64 (поддерживаем utf-8 корректно)
-                    const binaryString = atob(startParam.replace(/-/g, '+').replace(/_/g, '/'));
-                    const bytes = new Uint8Array(binaryString.length);
-                    for (let i = 0; i < binaryString.length; i++) {
-                        bytes[i] = binaryString.charCodeAt(i);
-                    }
-                    const decodedText = new TextDecoder('utf-8').decode(bytes);
-                    const rawTasks = JSON.parse(decodedText);
-
-                    // Пересобираем структуру под красивый вывод
-                    questions = rawTasks.map(task => {
-                        let desc = task.description || '';
-                        let cleanDesc = desc;
-                        let extractedOptions = null;
-
-                        // Если бот прислал задачу, где варианты вшиты в текст смайликами, очистим описание
-                        if (desc.includes('🇦') || desc.includes('A)')) {
-                            // Если у нас чистый импорт из нашего нового JSON, вытащим опции заново
-                            // Но для надежности, если бот зашил их строками, разделим их
-                            const lines = desc.split('\n');
-                            cleanDesc = lines[0]; // берем только сам вопрос
-                        }
-
-                        // Проверяем, есть ли готовый объект options (как в наших новых паках)
-                        if (task.options) {
-                            extractedOptions = task.options;
-                        } else {
-                            // Дефолтные заглушки, если структура старая
-                            extractedOptions = { "A": "Variant A", "B": "Variant B", "C": "Variant C", "D": "Variant D" };
-                        }
-
-                        return {
-                            id: task.id,
-                            title: task.title,
-                            question: cleanDesc,
-                            options: extractedOptions
-                        };
-                    });
-
-                } catch (e) {
-                    document.getElementById('question-text').innerText = "Ma'lumotni yuklashda xatolik yuz berdi.";
-                    return;
-                }
-            }
-
-            if (questions.length === 0) {
-                document.getElementById('question-text').innerText = "Hozircha faol testlar yo'q.";
-                return;
-            }
-
-            renderQuestion();
-        }
-
-        function renderQuestion() {
-            if (currentIdx >= questions.length) {
-                showResults();
-                return;
-            }
-
-            const currentQuestion = questions[currentIdx];
-            
-            // Обновляем прогресс и текст вопроса
-            document.getElementById('progress-text').innerText = `Savol: ${currentIdx + 1} / ${questions.length}`;
-            document.getElementById('question-text').innerHTML = `<strong>${currentQuestion.title}</strong><br><br>${currentQuestion.question}`;
-            
-            const optionsBox = document.getElementById('options-box');
-            optionsBox.innerHTML = ''; // Очищаем старые кнопки
-            
-            // Навешиваем блокировку кнопки Дальше
-            document.getElementById('next-button').disabled = true;
-
-            // Генерируем крупные кнопки для ответов A, B, C, D
-            const keys = ['A', 'B', 'C', 'D'];
-            keys.forEach(key => {
-                if (currentQuestion.options && currentQuestion.options[key]) {
-                    const btn = document.createElement('button');
-                    btn.className = 'option-btn';
-                    btn.id = `opt-${key}`;
-                    btn.onclick = () => selectOption(key);
-
-                    btn.innerHTML = `
-                        <span class="option-badge">${key}</span>
-                        <span>${currentQuestion.options[key]}</span>
-                    `;
-                    optionsBox.appendChild(btn);
-                }
-            });
-        }
-
-        function selectOption(key) {
-            // Снимаем выделение со всех кнопок текущего экрана
-            const buttons = document.querySelectorAll('.option-btn');
-            buttons.forEach(b => b.classList.remove('selected'));
-
-            // Выделяем текущую
-            document.getElementById(`opt-${key}`).classList.add('selected');
-            
-            // Сохраняем выбор и активируем кнопку "Keyingi savol"
-            selectedAnswers[currentIdx] = key;
-            document.getElementById('next-button').disabled = false;
-        }
-
-        function nextQuestion() {
-            currentIdx++;
-            renderQuestion();
-        }
-
-        function showResults() {
-            document.getElementById('quiz-box').classList.add('hidden');
-            document.getElementById('result-box').classList.remove('hidden');
-        }
-
-        function closeApp() {
-            tg.close();
-        }
-
-        // Запуск при загрузке страницы
-        window.onload = initQuiz;
-    </script>
-</body>
-</html>
+        <div class="start-card">
+            <div class="
