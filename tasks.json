@@ -1,0 +1,152 @@
+[
+  {
+    "description": "Turli raqamlardan tashkil topgan olti xonali abcdef soni 6 ga bo'linsa, (a+b+c+d+e+f)/f ifodaning eng katta qiymatini toping.",
+    "options": {"A": "17", "B": "18", "C": "19", "D": "20"},
+    "correct_option": "C"
+  },
+  {
+    "description": "Hisoblang: 3/(sqrt(8)-sqrt(5)) + 3/(sqrt(2)-sqrt(5)) - 1",
+    "options": {"A": "sqrt(3)-1", "B": "sqrt(2)-1", "C": "2sqrt(2)+sqrt(3)", "D": "2sqrt(2)-sqrt(3)"},
+    "correct_option": "C"
+  },
+  {
+    "description": "Kasrni qisqartiring: (10^(n+1)-10^n)/(10^(n+1)+10^n)",
+    "options": {"A": "9/11", "B": "11/9", "C": "10/9", "D": "9/10"},
+    "correct_option": "D"
+  },
+  {
+    "description": "Ifodani soddalashtiring: (4a^2-16a+16)/(a+3) : (a-2)^2/(-a^2+9)",
+    "options": {"A": "6-2a", "B": "12-4a", "C": "4a-12", "D": "2a-12"},
+    "correct_option": "B"
+  },
+  {
+    "description": "|5x-26|=x^2+2x+8 tenglamaning haqiqiy ildizlari yig'indisini toping.",
+    "options": {"A": "-7", "B": "3", "C": "-3", "D": "4"},
+    "correct_option": "C"
+  },
+  {
+    "description": "Agar a va b sonlar 5 ga qoldiqsiz bo'linsa, 3a+2b ni 5 ga bo'lgandagi qoldiqni toping.",
+    "options": {"A": "0", "B": "2", "C": "1", "D": "4"},
+    "correct_option": "A"
+  },
+  {
+    "description": "Sayyoh yo'lning 1/6 qismini bosib o'tgach, yo'l yarmigacha yana 16 km qolgan bo'lsa, yo'l uzunligini toping (km).",
+    "options": {"A": "48", "B": "42", "C": "54", "D": "36"},
+    "correct_option": "A"
+  },
+  {
+    "description": "Integralni hisoblang: ∫[0 to 1] (2x-1)cos(x^2-x+1)dx",
+    "options": {"A": "-2sin1", "B": "2sin1", "C": "0", "D": "sin1"},
+    "correct_option": "C"
+  },
+  {
+    "description": "(x+1)(|x|-1) >= 2 tengsizlikni yeching.",
+    "options": {"A": "(-inf; 0] U [sqrt(3); inf)", "B": "(-inf; -sqrt(3)] U [sqrt(3); inf)", "C": "[sqrt(3); inf)", "D": "(-inf; -sqrt(3)]"},
+    "correct_option": "B"
+  },
+  {
+    "description": "28 ta o'quvchidan 3x+1 tasi rus tilini, 2x-1 tasi ingliz tilini, x-1 tasi ikkalasini biladi. 3 tasi hech narsani bilmaydi. Nechta o'quvchi ingliz tilini biladi?",
+    "options": {"A": "12", "B": "10", "C": "11", "D": "19"},
+    "correct_option": "B"
+  },
+  {
+    "description": "Hisoblang: 0.429/0.03 + 0.128/0.08 + 0.0096/0.012",
+    "options": {"A": "1.67", "B": "16.7", "C": "2.39", "D": "23.9"},
+    "correct_option": "D"
+  },
+  {
+    "description": "7 kishidan 2 ta turli lavozimga necha xil usul bilan saylash mumkin?",
+    "options": {"A": "49", "B": "35", "C": "56", "D": "42"},
+    "correct_option": "D"
+  },
+  {
+    "description": "To'g'ri konusning balandligi 9 sm va asosi radiusi 5 sm. Asosiga parallel tekislik o'tkazilganda hosil bo'lgan kesik konusning kichik asosi radiusini toping.",
+    "options": {"A": "53/14", "B": "221/56", "C": "405/106", "D": "45/14"},
+    "correct_option": "C"
+  },
+  {
+    "description": "120000 so'mning 15%i uy xarajatlariga, 2/3 qismi boshqa xarajatlarga sarflandi. Qolgan pulning 20%ini toping.",
+    "options": {"A": "4150", "B": "4400", "C": "4650", "D": "4200"},
+    "correct_option": "D"
+  },
+  {
+    "description": "Agar a=16-x^2, b=x^2-4 va a,b in N bo'lsa, a^2+b^2 eng kichik qiymatini toping.",
+    "options": {"A": "96", "B": "108", "C": "74", "D": "72"},
+    "correct_option": "C"
+  },
+  {
+    "description": "Parallelogrammning tomonlari 12 va 16, o'tmas burchagi 150°. Bissektrisalar kesishib hosil qilgan to'g'ri to'rtburchak yuzini toping.",
+    "options": {"A": "4", "B": "6", "C": "12", "D": "8"},
+    "correct_option": "C"
+  },
+  {
+    "description": "Hisoblang: -(-3.8) + (-6.2) - (-2.8 + (-8.4))",
+    "options": {"A": "8.8", "B": "13.6", "C": "-1.2", "D": "-13.6"},
+    "correct_option": "A"
+  },
+  {
+    "description": "Ikkita to'g'ri chiziq kesishishidan hosil bo'lgan uchta burchak yig'indisi 225° bo'lsa, kattasini toping.",
+    "options": {"A": "125°", "B": "145°", "C": "135°", "D": "115°"},
+    "correct_option": "C"
+  },
+  {
+    "description": "Teng yonli uchburchak perimetri 64 sm. Teng tomonlarining o'rtalarini tutashtiruvchi kesma 12 sm bo'lsa, ichki chizilgan aylana diametrini toping.",
+    "options": {"A": "9", "B": "6", "C": "12", "D": "8"},
+    "correct_option": "B"
+  },
+  {
+    "description": "Rasmda f(x)=kx+b funksiya berilgan. f(2)+f(0) ning qiymatini toping.",
+    "options": {"A": "20", "B": "16", "C": "12", "D": "18"},
+    "correct_option": "D"
+  },
+  {
+    "description": "A={1;4;5;7;8}, B={1;2;3;5;8;9;10;11;12}, C={a;b;c;d;f}. n((B \ A) U C) ni toping.",
+    "options": {"A": "12", "B": "10", "C": "11", "D": "9"},
+    "correct_option": "A"
+  },
+  {
+    "description": "Silindr o'q kesimining diagonali 15 ga, balandligi 12 ga teng bo'lsa, asosi radiusini toping.",
+    "options": {"A": "4.5", "B": "2sqrt(3)", "C": "3sqrt(2)", "D": "9"},
+    "correct_option": "A"
+  },
+  {
+    "description": "a1=2, an=2^n * a(n-1) - 2 formula bilan berilgan ketma-ketlikning 4-hadini toping.",
+    "options": {"A": "732", "B": "730", "C": "734", "D": "736"},
+    "correct_option": "A"
+  },
+  {
+    "description": "x^2-(b+2)x+b-4=0 tenglamaning ildizlaridan biri b ga teng bo'lsa, x1^2+x2^2 ni toping.",
+    "options": {"A": "16", "B": "20", "C": "18", "D": "12"},
+    "correct_option": "B"
+  },
+  {
+    "description": "P(x+3)=Q(x)+x+5 va P(x-2) ni x-6 ga bo'lganda qoldiq 2 bo'lsa, Q(1) ni toping.",
+    "options": {"A": "-3", "B": "1", "C": "0", "D": "-4"},
+    "correct_option": "A"
+  },
+  {
+    "description": "sin(pi/7) + sin(17pi/21) - sin(11pi/21) + 1 ifoda qiymatini toping.",
+    "options": {"A": "2", "B": "1", "C": "0", "D": "-1"},
+    "correct_option": "A"
+  },
+  {
+    "description": "k(k+1)x=k+4(3x+1) tenglama yechimga ega bo'lmaydigan k ning qiymatini toping.",
+    "options": {"A": "3", "B": "6", "C": "-4", "D": "8"},
+    "correct_option": "A"
+  },
+  {
+    "description": "a va b ratsional sonlar uchun a+(sqrt(3)/3)b=4sqrt(3) bo'lsa, a^2+b^2 ni toping.",
+    "options": {"A": "121", "B": "144", "C": "169", "D": "125"},
+    "correct_option": "C"
+  },
+  {
+    "description": "Hisoblang: ∫[8 to 9] (x-8)^7 * x dx",
+    "options": {"A": "10/9", "B": "0.1", "C": "10/3", "D": "5/3"},
+    "correct_option": "A"
+  },
+  {
+    "description": "b ning qanday qiymatlarida y=5x+b funksiya kamayuvchi bo'ladi?",
+    "options": {"A": "b>0", "B": "b<0", "C": "b=0", "D": "hech qanday qiymatlarida"},
+    "correct_option": "D"
+  }
+]
