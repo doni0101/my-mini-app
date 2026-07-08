@@ -184,8 +184,8 @@
         <div class="card">
             <div class="icon">🎉</div>
             <div class="title">Test yakunlandi!</div>
-            <div class="info-text">Siz barcha savollarga muvaffaqiyatli javob berdingiz. Natijani bot orqali bilib olishingiz mumkin.</div>
-            <button class="btn" onclick="closeApp()">Yopish</button>
+            <div class="info-text">Natijalarni saqlash va botga yuborish uchun quyidagi tugmani bosing.</div>
+            <button class="btn" onclick="closeApp()">Natijani saqlash</button>
         </div>
     </div>
 
@@ -197,6 +197,7 @@
         let dataset = [];
         let activeIdx = 0;
         let pickedKey = null;
+        let userAnswers = []; // Сохраняем ответы сюда
 
         function decodeStartParam() {
             const params = new URLSearchParams(window.location.search);
@@ -230,7 +231,7 @@
                 }
             } catch (err) {
                 document.getElementById('test-title').innerText = "Xatolik";
-                document.getElementById('test-desc').innerText = "Ma'lumotlarni o'qishda muammo yuz berdi. Iltimos, botdan testni qayta..." ;
+                document.getElementById('test-desc').innerText = "Ma'lumotlarni o'qishda muammo yuz berdi.";
                 console.error(err);
             }
         }
@@ -258,10 +259,9 @@
             const targetBlock = document.getElementById('options-block');
             targetBlock.innerHTML = '';
 
-            // Улучшенная логика: если options пустые или отсутствуют, создаем заглушки кнопок, чтобы они нажимались!
             const finalOptions = (item.options && Object.keys(item.options).length > 0) 
                 ? item.options 
-                : {"A": "A varianti", "B": "B varianti", "C": "C varianti", "D": "D varianti"};
+                : {"A": "A", "B": "B", "C": "C", "D": "D"};
 
             ['A', 'B', 'C', 'D'].forEach(k => {
                 if (finalOptions[k]) {
@@ -284,11 +284,22 @@
         }
 
         function handleNext() {
+            // Записываем ответ ученика перед переходом
+            userAnswers.push({
+                q_idx: activeIdx,
+                chosen: pickedKey
+            });
             activeIdx++;
             displayQuestion();
         }
 
         function closeApp() {
+            // Формируем объект для отправки в бот
+            const resultPayload = {
+                answers: userAnswers
+            };
+            // Отправляем данные в Telegram
+            tg.sendData(JSON.stringify(resultPayload));
             tg.close();
         }
 
