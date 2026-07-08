@@ -43,14 +43,14 @@
         .card {
             background: #2c2c2e;
             border-radius: 16px;
-            padding: 25px 20px;
+            padding: 30px 20px;
             text-align: center;
             margin: auto 0;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
 
         .icon {
-            font-size: 45px;
+            font-size: 50px;
             margin-bottom: 15px;
         }
 
@@ -73,26 +73,24 @@
             color: #aeaeb2;
             margin-bottom: 12px;
             align-self: flex-start;
+            font-weight: 500;
         }
 
         .question-card {
             background: #2c2c2e;
             border-radius: 16px;
-            padding: 20px;
+            padding: 22px;
             font-size: 16px;
-            line-height: 1.5;
+            line-height: 1.6;
             margin-bottom: 20px;
-            min-height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
+            text-align: left;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
         .options-list {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
             width: 100%;
         }
 
@@ -100,7 +98,7 @@
             background: #2c2c2e;
             border: 1px solid #3a3a3c;
             border-radius: 12px;
-            padding: 14px 16px;
+            padding: 15px 18px;
             font-size: 15px;
             text-align: left;
             cursor: pointer;
@@ -109,6 +107,7 @@
             color: #ffffff;
             width: 100%;
             box-sizing: border-box;
+            transition: background 0.2s;
         }
 
         .option-item.selected {
@@ -167,7 +166,7 @@
         <div class="card">
             <div class="icon">📋</div>
             <div class="title" id="test-title">Matematika Testi</div>
-            <div class="info-text" id="test-desc">Test yuklanmoqda, iltimos kuting...</div>
+            <div class="info-text" id="test-desc">Yuklanmoqda...</div>
             <button class="btn" id="start-btn" disabled onclick="startQuiz()">Testni boshlash</button>
         </div>
     </div>
@@ -184,8 +183,8 @@
     <div class="quiz-container hidden" id="finish-screen">
         <div class="card">
             <div class="icon">🎉</div>
-            <div class="title">Siz testni yakunladingiz!</div>
-            <div class="info-text">Barcha javoblar muvaffaqiyatli qabul qilindi. Natijani bot orqali bilib olishingiz mumkin.</div>
+            <div class="title">Test yakunlandi!</div>
+            <div class="info-text">Siz barcha savollarga muvaffaqiyatli javob berdingiz. Natijani bot orqali bilib olishingiz mumkin.</div>
             <button class="btn" onclick="closeApp()">Yopish</button>
         </div>
     </div>
@@ -199,32 +198,42 @@
         let activeIdx = 0;
         let pickedKey = null;
 
-        function loadData() {
+        function decodeStartParam() {
             const params = new URLSearchParams(window.location.search);
-            const rawParam = params.get('tgWebAppStartParam');
+            let rawParam = params.get('tgWebAppStartParam');
 
-            if (rawParam) {
-                try {
-                    const binary = atob(rawParam.replace(/-/g, '+').replace(/_/g, '/'));
-                    const bytes = new Uint8Array(binary.length);
-                    for (let i = 0; i < binary.length; i++) {
-                        bytes[i] = binary.charCodeAt(i);
-                    }
-                    const text = new TextDecoder('utf-8').decode(bytes);
-                    dataset = JSON.parse(text);
-
-                    if (dataset && dataset.length > 0) {
-                        document.getElementById('test-title').innerText = dataset[0].title || "Matematika Testi";
-                        document.getElementById('test-desc').innerText = `Ushbu blokda jami ${dataset.length} ta savol mavjud. Tayyor bo'lsangiz, boshlash tugmasini bosing.`;
-                        document.getElementById('start-btn').disabled = false;
-                    }
-                } catch (err) {
-                    document.getElementById('test-title').innerText = "Xatolik";
-                    document.getElementById('test-desc').innerText = "Ma'lumotlarni dekodlashda xatolik yuz berdi.";
-                }
-            } else {
+            if (!rawParam) {
                 document.getElementById('test-title').innerText = "Diqqat";
                 document.getElementById('test-desc').innerText = "Hech qanday test parametrlari topilmadi.";
+                return;
+            }
+
+            try {
+                // Корректируем Base64 строку перед декодированием
+                rawParam = rawParam.replace(/-/g, '+').replace(/_/g, '/');
+                while (rawParam.length % 4) { rawParam += '='; }
+
+                const binary = atob(rawParam);
+                const bytes = new Uint8Array(binary.length);
+                for (let i = 0; i < binary.length; i++) {
+                    bytes[i] = binary.charCodeAt(i);
+                }
+                
+                const decodedText = new TextDecoder('utf-8').decode(bytes);
+                dataset = JSON.parse(decodedText);
+
+                if (dataset && dataset.length > 0) {
+                    // Берём заголовок из первого вопроса пачки
+                    document.getElementById('test-title').innerText = dataset[0].title || "Matematika Testi";
+                    document.getElementById('test-desc').innerText = `Ushbu blokda jami ${dataset.length} ta savol mavjud. Tayyor bo'lsangiz, boshlash tugmasini bosing.`;
+                    document.getElementById('start-btn').disabled = false;
+                } else {
+                    throw new Error("Bo'sh ma'lumot");
+                }
+            } catch (err) {
+                document.getElementById('test-title').innerText = "Xatolik";
+                document.getElementById('test-desc').innerText = "Ma'lumotlarni o'qishda muammo yuz berdi. Iltimos, botdan testni qayta oching.";
+                console.error(err);
             }
         }
 
@@ -279,7 +288,8 @@
             tg.close();
         }
 
-        window.onload = loadData;
+        // Запуск при загрузке
+        window.onload = decodeStartParam;
     </script>
 </body>
 </html>
