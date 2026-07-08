@@ -2,82 +2,308 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ILM DEVONI</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { background-color: #1c1c1e; color: #fff; font-family: sans-serif; padding: 20px; }
-        .btn { background: #2481cc; border: none; padding: 15px; border-radius: 10px; color: white; width: 100%; margin-top: 10px; cursor: pointer; }
-        .option { background: #2c2c2e; border: 1px solid #3a3a3c; padding: 15px; margin: 10px 0; border-radius: 10px; cursor: pointer; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #1c1c1e;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            padding: 15px;
+            font-weight: bold;
+            font-size: 16px;
+            color: #2481cc;
+            width: 100%;
+            background: #2c2c2e;
+            box-sizing: border-box;
+            border-bottom: 1px solid #3a3a3c;
+        }
+
+        .quiz-container {
+            width: 100%;
+            max-width: 450px;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .card {
+            background: #2c2c2e;
+            border-radius: 16px;
+            padding: 30px 20px;
+            text-align: center;
+            margin: auto 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+        }
+
+        .title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #ffffff;
+        }
+
+        .info-text {
+            font-size: 14px;
+            color: #aeaeb2;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+
+        .progress {
+            font-size: 13px;
+            color: #aeaeb2;
+            margin-bottom: 12px;
+            align-self: flex-start;
+            font-weight: 500;
+        }
+
+        .question-card {
+            background: #2c2c2e;
+            border-radius: 16px;
+            padding: 22px;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            text-align: left;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .option-item {
+            background: #2c2c2e;
+            border: 1px solid #3a3a3c;
+            border-radius: 12px;
+            padding: 15px 18px;
+            font-size: 15px;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            color: #ffffff;
+            width: 100%;
+            box-sizing: border-box;
+            transition: background 0.2s;
+        }
+
+        .option-item.selected {
+            border-color: #2481cc;
+            background: rgba(36, 129, 204, 0.15);
+        }
+
+        .badge {
+            background: #3a3a3c;
+            color: #ffffff;
+            border-radius: 6px;
+            font-weight: bold;
+            padding: 4px 8px;
+            margin-right: 12px;
+            font-size: 13px;
+        }
+
+        .option-item.selected .badge {
+            background: #2481cc;
+        }
+
+        .action-box {
+            margin-top: auto;
+            padding-top: 20px;
+            width: 100%;
+        }
+
+        .btn {
+            width: 100%;
+            background-color: #2481cc;
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn:disabled {
+            background-color: #3a3a3c;
+            color: #767680;
+            cursor: not-allowed;
+        }
+
+        .hidden {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
 
-<div id="auth">
-    <h3>Ism va Familiyangizni kiriting:</h3>
-    <input type="text" id="name" placeholder="Ism" style="padding:10px; width:90%;">
-    <input type="text" id="surname" placeholder="Familiya" style="padding:10px; width:90%; margin-top:10px;">
-    <button class="btn" onclick="saveUser()">Testni boshlash</button>
-</div>
+    <div class="header">ILM DEVONI (Doniyor)</div>
 
-<div id="quiz" style="display:none;">
-    <h3 id="question">Savol yuklanmoqda...</h3>
-    <div id="options"></div>
-</div>
+    <div class="quiz-container" id="start-screen">
+        <div class="card">
+            <div class="icon">📋</div>
+            <div class="title" id="test-title">Matematika Testi</div>
+            <div class="info-text" id="test-desc">Yuklanmoqda...</div>
+            <button class="btn" id="start-btn" disabled onclick="startQuiz()">Testni boshlash</button>
+        </div>
+    </div>
 
-<script>
-    let tg = window.Telegram.WebApp;
-    let dataset = [];
-    let currentQ = 0;
-    let score = 0;
+    <div class="quiz-container hidden" id="quiz-screen">
+        <div class="progress" id="progress-lbl">Savol: 1 / 1</div>
+        <div class="question-card" id="question-lbl">...</div>
+        <div class="options-list" id="options-block"></div>
+        <div class="action-box">
+            <button class="btn" id="next-btn" disabled onclick="handleNext()">Keyingi savol ➔</button>
+        </div>
+    </div>
 
-    // 1. Сохранение пользователя
-    function saveUser() {
-        let name = document.getElementById('name').value;
-        let surname = document.getElementById('surname').value;
-        if(!name || !surname) return alert("Iltimos, ism va familiyangizni kiriting!");
-        localStorage.setItem('user', name + ' ' + surname);
-        document.getElementById('auth').style.display = 'none';
-        document.getElementById('quiz').style.display = 'block';
-        loadTasks();
-    }
+    <div class="quiz-container hidden" id="finish-screen">
+        <div class="card">
+            <div class="icon">🎉</div>
+            <div class="title">Test yakunlandi!</div>
+            <div class="info-text">Natijalarni saqlash va botga yuborish uchun quyidagi tugmani bosing.</div>
+            <button class="btn" onclick="closeApp()">Natijani saqlash</button>
+        </div>
+    </div>
 
-    // 2. Загрузка задач из tasks.json
-    async function loadTasks() {
-        const response = await fetch('tasks.json');
-        dataset = await response.json();
-        showQuestion();
-    }
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
 
-    // 3. Показ вопроса
-    function showQuestion() {
-        if(currentQ >= dataset.length) return finishTest();
-        let q = dataset[currentQ];
-        document.getElementById('question').innerText = q.description;
-        let optDiv = document.getElementById('options');
-        optDiv.innerHTML = '';
-        
-        for(let key in q.options) {
-            optDiv.innerHTML += `<div class="option" onclick="check('${key}')">${key}: ${q.options[key]}</div>`;
+        let dataset = [];
+        let activeIdx = 0;
+        let pickedKey = null;
+        let userAnswers = []; // Сохраняем ответы сюда
+
+        function decodeStartParam() {
+            const params = new URLSearchParams(window.location.search);
+            let rawParam = params.get('tgWebAppStartParam');
+
+            if (!rawParam) {
+                document.getElementById('test-title').innerText = "Diqqat";
+                document.getElementById('test-desc').innerText = "Hech qanday test parametrlari topilmadi.";
+                return;
+            }
+
+            try {
+                rawParam = rawParam.replace(/-/g, '+').replace(/_/g, '/');
+                while (rawParam.length % 4) { rawParam += '='; }
+
+                const binary = atob(rawParam);
+                const bytes = new Uint8Array(binary.length);
+                for (let i = 0; i < binary.length; i++) {
+                    bytes[i] = binary.charCodeAt(i);
+                }
+                
+                const decodedText = new TextDecoder('utf-8').decode(bytes);
+                dataset = JSON.parse(decodedText);
+
+                if (dataset && dataset.length > 0) {
+                    document.getElementById('test-title').innerText = dataset[0].title || "Matematika Testi";
+                    document.getElementById('test-desc').innerText = `Ushbu blokda jami ${dataset.length} ta savol mavjud. Tayyor bo'lsangiz, boshlash tugmasini bosing.`;
+                    document.getElementById('start-btn').disabled = false;
+                } else {
+                    throw new Error("Bo'sh ma'lumot");
+                }
+            } catch (err) {
+                document.getElementById('test-title').innerText = "Xatolik";
+                document.getElementById('test-desc').innerText = "Ma'lumotlarni o'qishda muammo yuz berdi.";
+                console.error(err);
+            }
         }
-    }
 
-    // 4. Проверка ответа
-    function check(key) {
-        if(key === dataset[currentQ].correct_option) score++;
-        currentQ++;
-        showQuestion();
-    }
+        function startQuiz() {
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            displayQuestion();
+        }
 
-    // 5. Завершение
-    function finishTest() {
-        let user = localStorage.getItem('user');
-        tg.sendData(JSON.stringify({
-            user: user,
-            correct: score,
-            total: dataset.length
-        }));
-        tg.close();
-    }
-</script>
+        function displayQuestion() {
+            if (activeIdx >= dataset.length) {
+                document.getElementById('quiz-screen').classList.add('hidden');
+                document.getElementById('finish-screen').classList.remove('hidden');
+                return;
+            }
+
+            pickedKey = null;
+            document.getElementById('next-btn').disabled = true;
+
+            const item = dataset[activeIdx];
+            document.getElementById('progress-lbl').innerText = `Savol: ${activeIdx + 1} / ${dataset.length}`;
+            document.getElementById('question-lbl').innerText = item.description;
+
+            const targetBlock = document.getElementById('options-block');
+            targetBlock.innerHTML = '';
+
+            const finalOptions = (item.options && Object.keys(item.options).length > 0) 
+                ? item.options 
+                : {"A": "A", "B": "B", "C": "C", "D": "D"};
+
+            ['A', 'B', 'C', 'D'].forEach(k => {
+                if (finalOptions[k]) {
+                    const optionBtn = document.createElement('button');
+                    optionBtn.className = 'option-item';
+                    optionBtn.id = `block-${k}`;
+                    optionBtn.onclick = () => chooseOption(k);
+                    optionBtn.innerHTML = `<span class="badge">${k}</span><span>${finalOptions[k]}</span>`;
+                    targetBlock.appendChild(optionBtn);
+                }
+            });
+        }
+
+        function chooseOption(k) {
+            document.querySelectorAll('.option-item').forEach(el => el.classList.remove('selected'));
+            const target = document.getElementById(`block-${k}`);
+            if (target) target.classList.add('selected');
+            pickedKey = k;
+            document.getElementById('next-btn').disabled = false;
+        }
+
+        function handleNext() {
+            // Записываем ответ ученика перед переходом
+            userAnswers.push({
+                q_idx: activeIdx,
+                chosen: pickedKey
+            });
+            activeIdx++;
+            displayQuestion();
+        }
+
+        function closeApp() {
+            // Формируем объект для отправки в бот
+            const resultPayload = {
+                answers: userAnswers
+            };
+            // Отправляем данные в Telegram
+            tg.sendData(JSON.stringify(resultPayload));
+            tg.close();
+        }
+
+        window.onload = decodeStartParam;
+    </script>
 </body>
 </html>
