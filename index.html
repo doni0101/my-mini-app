@@ -209,7 +209,6 @@
             }
 
             try {
-                // Корректируем Base64 строку перед декодированием
                 rawParam = rawParam.replace(/-/g, '+').replace(/_/g, '/');
                 while (rawParam.length % 4) { rawParam += '='; }
 
@@ -223,7 +222,6 @@
                 dataset = JSON.parse(decodedText);
 
                 if (dataset && dataset.length > 0) {
-                    // Берём заголовок из первого вопроса пачки
                     document.getElementById('test-title').innerText = dataset[0].title || "Matematika Testi";
                     document.getElementById('test-desc').innerText = `Ushbu blokda jami ${dataset.length} ta savol mavjud. Tayyor bo'lsangiz, boshlash tugmasini bosing.`;
                     document.getElementById('start-btn').disabled = false;
@@ -232,7 +230,7 @@
                 }
             } catch (err) {
                 document.getElementById('test-title').innerText = "Xatolik";
-                document.getElementById('test-desc').innerText = "Ma'lumotlarni o'qishda muammo yuz berdi. Iltimos, botdan testni qayta oching.";
+                document.getElementById('test-desc').innerText = "Ma'lumotlarni o'qishda muammo yuz berdi. Iltimos, botdan testni qayta..." ;
                 console.error(err);
             }
         }
@@ -260,13 +258,18 @@
             const targetBlock = document.getElementById('options-block');
             targetBlock.innerHTML = '';
 
+            // Улучшенная логика: если options пустые или отсутствуют, создаем заглушки кнопок, чтобы они нажимались!
+            const finalOptions = (item.options && Object.keys(item.options).length > 0) 
+                ? item.options 
+                : {"A": "A varianti", "B": "B varianti", "C": "C varianti", "D": "D varianti"};
+
             ['A', 'B', 'C', 'D'].forEach(k => {
-                if (item.options && item.options[k]) {
+                if (finalOptions[k]) {
                     const optionBtn = document.createElement('button');
                     optionBtn.className = 'option-item';
                     optionBtn.id = `block-${k}`;
                     optionBtn.onclick = () => chooseOption(k);
-                    optionBtn.innerHTML = `<span class="badge">${k}</span><span>${item.options[k]}</span>`;
+                    optionBtn.innerHTML = `<span class="badge">${k}</span><span>${finalOptions[k]}</span>`;
                     targetBlock.appendChild(optionBtn);
                 }
             });
@@ -274,7 +277,8 @@
 
         function chooseOption(k) {
             document.querySelectorAll('.option-item').forEach(el => el.classList.remove('selected'));
-            document.getElementById(`block-${k}`).classList.add('selected');
+            const target = document.getElementById(`block-${k}`);
+            if (target) target.classList.add('selected');
             pickedKey = k;
             document.getElementById('next-btn').disabled = false;
         }
@@ -288,7 +292,6 @@
             tg.close();
         }
 
-        // Запуск при загрузке
         window.onload = decodeStartParam;
     </script>
 </body>
